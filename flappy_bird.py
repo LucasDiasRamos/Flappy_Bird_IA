@@ -96,8 +96,8 @@ class Passaro:
         retangulo = imagem_rotacionada.get_rect(center=pos_centro_imagem)
         tela.blit(imagem_rotacionada, retangulo.topleft)
 
-        def get_mask(self):     
-            return pygame.mask.from_surface(self.imagem)
+    def get_mask(self):     
+        return pygame.mask.from_surface(self.imagem)
 
 
 class Cano:
@@ -162,10 +162,10 @@ class Chao:
         self.x2 -= self.VELOCIDADE
 
         if self.x1 + self.LARGURA < 0:
-            self.x1 = self.x1 + self.LARGURA
+            self.x1 = self.x2 + self.LARGURA
 
         if self.x2 + self.LARGURA < 0 :
-            self.x2 = self.x2 + self.LARGURA
+            self.x2 = self.x1 + self.LARGURA
 
     def desenhar(self, tela):
         tela.blit(self.IMAGEM, (self.x1 , self.y))
