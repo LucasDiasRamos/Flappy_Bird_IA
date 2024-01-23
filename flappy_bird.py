@@ -96,8 +96,8 @@ class Passaro:
         retangulo = imagem_rotacionada.get_rect(center=pos_centro_imagem)
         tela.blit(imagem_rotacionada, retangulo.topleft)
 
-        def get_mask(self):
-            pygame.mask.from_surface(self.imagem)
+        def get_mask(self):     
+            return pygame.mask.from_surface(self.imagem)
 
 
 class Cano:
@@ -120,7 +120,7 @@ class Cano:
 
     def definir_altura(self):
         self.altura = random.randrange(50, 450)
-        self.pos_base = self.altura - self.CANO_TOPO.get_height()
+        self.pos_topo = self.altura - self.CANO_TOPO.get_height()
         self.pos_base = self.altura + self.DISTANCIA
 
     def mover(self):
@@ -201,12 +201,10 @@ def main():
         relogio.tick(30)
 
         for evento in pygame.event.get():
-
             if evento.type == pygame.QUIT:
                 rodando = False
                 pygame.quit()
                 quit()
-
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_SPACE:
                     for passaro in passaros:
@@ -222,14 +220,13 @@ def main():
 
         for cano in canos:
             for i , passaro in enumerate(passaros):
-
                 if cano.colidir(passaro):
                     passaros.pop(i)
                 if not cano.passou and passaro.x > cano.x:
                     cano.passou = True
                     adicionar_cano = True
             cano.mover()
-            if cano.x + cano.CANO_TOPO.get_width() < 0;
+            if cano.x + cano.CANO_TOPO.get_width() < 0:
                 remover_canos.append(cano)
 
         if adicionar_cano:
