@@ -195,7 +195,7 @@ def desenhar_tela(tela, passaros, canos, chao, pontos):
     tela.blit(texto, (TELA_LARGURA - 10 - texto.get_width(), 10))
 
     if ai_jogando:
-        texto =FONTE_PONTOS.render(f"Gerção: {ai_jogando}", 1, (255, 255, 255))
+        texto =FONTE_PONTOS.render(f"Geração: {geracao}", 1, (255, 255, 255))
         tela.blit(texto, (10, 10))
 
     chao.desenhar(tela)
@@ -274,6 +274,10 @@ def main(genomas, config): # fitness function
             for i, passaro in enumerate(passaros):
                 if cano.colidir(passaro):
                     passaros.pop(i)
+                    if ai_jogando:
+                        lista_genomas[i].fitness -= 1
+                        lista_genomas.pop(i)
+                        redes.pop(i)
 
                 if not cano.passou and passaro.x > cano.x:
                     cano.passou = True
@@ -286,6 +290,9 @@ def main(genomas, config): # fitness function
             pontos += 1
             canos.append(Cano(600))
 
+            for genoma in lista_genomas: # aumenta o fitness de passaros que passaram pelo cano
+                genoma.fitness += 5
+
         for cano in remover_canos:
             canos.remove(cano)
 
@@ -293,9 +300,30 @@ def main(genomas, config): # fitness function
 
             if (passaro.y + passaro.imagem.get_height()) > chao.y or passaro.y < 0:
                 passaros.pop(i)
+                if ai_jogando:
+                    lista_genomas.pop(i)
+                    redes.pop(i)
 
         desenhar_tela(tela, passaros, canos, chao, pontos)
 
+def rodar(caminho_config):
+    config = neat.config.Config(neat.DefaultGenome, 
+                                neat.DefaultReproduction,
+                                neat.DefaultSpeciesSet,
+                                neat.DefaultStagnation,caminho_config)
+    
+    populacao = neat.Population(config)
+    populacao.add_reporter(neat.StdOutReporter(True))
+    populacao.add_reporter(neat.StatisticsReporter())
+
+    if ai_jogando:
+        populacao.run(main, 50)
+    else:
+        main(None, None)
+
+
 
 if __name__ == '__main__':
-    main()
+    caminho = os.path.dirname(__file__)
+    caminho_config = os.path.join('config.txt')
+    rodar(caminho_config)
